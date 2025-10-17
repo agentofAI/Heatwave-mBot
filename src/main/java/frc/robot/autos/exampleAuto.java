@@ -52,7 +52,7 @@ public class exampleAuto extends SequentialCommandGroup {
                 Constants.AutoConstants.kPThetaController, 0, 0, Constants.AutoConstants.kThetaControllerConstraints);
         thetaController.enableContinuousInput(-Math.PI, Math.PI);
 
-        //VC: So we (should) have and are using the SwerveController functionality instead of RamSete controller
+        //VC: So we (should) have and are using the SwerveController functionality 
         SwerveControllerCommand swerveControllerCommand =
             new SwerveControllerCommand(
                 exampleTrajectory,

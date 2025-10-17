@@ -30,3 +30,9 @@ subsystems
 commands
     TeleopSwerve - To Check
     VC - To add Shooter subsystem commands
+
+//To Do 
+    - Robot Centric / Field Oriented Driving ??
+    - Zero Gyro ??
+    - Test shooter from main code - operator buttons 
+    - Test Autonomous

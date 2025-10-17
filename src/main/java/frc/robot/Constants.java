@@ -11,6 +11,9 @@ package frc.robot;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.signals.SensorDirectionValue;
+import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
+import com.pathplanner.lib.util.PIDConstants;
+import com.pathplanner.lib.util.ReplanningConfig;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -20,8 +23,19 @@ import edu.wpi.first.math.util.Units;
 import frc.lib.util.COTSTalonFXSwerveConstants;
 import frc.lib.util.SwerveModuleConstants;
 
+import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
+import com.pathplanner.lib.util.PIDConstants;
+import com.pathplanner.lib.util.ReplanningConfig;
+
 public final class Constants {
     public static final double stickDeadband = 0.1;
+
+    public static class OperatorConstants {
+        // Port numbers for driver and operator gamepads. These correspond with the numbers on the USB
+        // tab of the DriverStation
+        public static final int kDriverControllerPort = 0;
+        public static final int kOperatorControllerPort = 1;
+    }    
 
     public static final class Swerve {
         public static final int pigeonID = 0;
@@ -37,11 +51,14 @@ public final class Constants {
         /* Swerve Kinematics 
          * No need to ever change this unless you are not doing a traditional rectangular/square 4 module swerve */
          /* VC: This is getting Kinematics created by finding robot center ?  */
-         public static final SwerveDriveKinematics swerveKinematics = new SwerveDriveKinematics(
-            new Translation2d(wheelBase / 2.0, trackWidth / 2.0),
-            new Translation2d(wheelBase / 2.0, -trackWidth / 2.0),
-            new Translation2d(-wheelBase / 2.0, -trackWidth / 2.0),
-            new Translation2d(-wheelBase / 2.0, trackWidth / 2.0));
+
+         public static final Translation2d flModuleOffset = new Translation2d(wheelBase / 2.0, trackWidth / 2.0);
+         public static final Translation2d frModuleOffset = new Translation2d(wheelBase / 2.0, -trackWidth / 2.0);
+         public static final Translation2d blModuleOffset = new Translation2d(-wheelBase / 2.0, -trackWidth / 2.0);
+         public static final Translation2d brModuleOffset = new Translation2d(-wheelBase / 2.0, trackWidth / 2.0);
+
+         public static final SwerveDriveKinematics swerveKinematics = new SwerveDriveKinematics(flModuleOffset,frModuleOffset,blModuleOffset,brModuleOffset);
+            
 
         /* Module Gear Ratios */
         public static final double driveGearRatio = chosenModule.driveGearRatio;
@@ -143,7 +160,17 @@ public final class Constants {
             public static final SwerveModuleConstants constants = 
                 new SwerveModuleConstants(driveMotorID, angleMotorID, canCoderID, angleOffset);
         }
-    }
+
+    //VC: Added as part of 3015 RageRobotics PathPlanner Library integration
+    public static final HolonomicPathFollowerConfig pathFollowerConfig = new HolonomicPathFollowerConfig(
+      new PIDConstants(5.0, 0, 0), // Translation constants 
+      new PIDConstants(5.0, 0, 0), // Rotation constants 
+      maxSpeed, 
+      flModuleOffset.getNorm(), // Drive base radius (distance from center to furthest module) 
+      new ReplanningConfig()
+    );
+
+    } //Class Swerve ends here. 
 
     public static final class AutoConstants { /* VC: To Do: Confirm / Tune values. The below constants are used in the example auto, and must be tuned to specific robot */
         public static final double kMaxSpeedMetersPerSecond = 3;
@@ -160,5 +187,25 @@ public final class Constants {
             new TrapezoidProfile.Constraints(
                 kMaxAngularSpeedRadiansPerSecond, kMaxAngularSpeedRadiansPerSecondSquared);
     }
+
+    public static class LauncherConstants {
+        // PWM ports/CAN IDs for motor controllers
+        public static final int kFeederID = 5;
+        public static final int kLauncherID = 6;
+    
+        // Current limit for launcher and feed wheels
+        public static final int kLauncherCurrentLimit = 80;
+        public static final int kFeedCurrentLimit = 80;
+    
+        // Speeds for wheels when intaking and launching. Intake speeds are negative to run the wheels
+        // in reverse
+        public static final double kLauncherSpeed = 1;
+        public static final double kLaunchFeederSpeed = 1;
+        public static final double kIntakeLauncherSpeed = -1;
+        public static final double kIntakeFeederSpeed = -.2;
+    
+        public static final double kLauncherDelay = 1;
+    }   
+
 }
 
